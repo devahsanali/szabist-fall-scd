@@ -43,5 +43,19 @@ jobs:
       - name: Generate app key
         run: php artisan key:generate
 
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version:
+
+      - name: Install Node.js dependencies
+        run: npm install
+
+      - name: Build assets
+        run: npm run build
+
       - name: Execute tests
         run: vendor/bin/phpunit
