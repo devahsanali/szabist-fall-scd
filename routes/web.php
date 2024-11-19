@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +26,24 @@ Route::middleware('auth')->group(function () {
         Route::get('edit/{id}', [StudentController::class, 'edit'])->name('edit');
         Route::post('update', [StudentController::class, 'update'])->name('update');
         Route::get('destroy/{id}', [StudentController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::name('enrollment.')->prefix('enrollment')->group(function() {
+        Route::get('/', [EnrollmentController::class, 'index'])->name('index');
+        Route::get('create', [EnrollmentController::class, 'create'])->name('create');
+        Route::post('store', [EnrollmentController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [EnrollmentController::class, 'edit'])->name('edit');
+        Route::post('update', [EnrollmentController::class, 'update'])->name('update');
+        Route::get('destroy/{id}', [EnrollmentController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::name('course.')->prefix('course')->group(function() {
+        Route::get('/', [CourseController::class, 'index'])->name('index');
+        Route::get('create', [CourseController::class, 'create'])->name('create');
+        Route::post('store', [CourseController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [CourseController::class, 'edit'])->name('edit');
+        Route::post('update', [CourseController::class, 'update'])->name('update');
+        Route::get('destroy/{id}', [CourseController::class, 'destroy'])->name('destroy');
     });
 });
 
