@@ -12,4 +12,9 @@ class Student extends Model
         'phone',
         'address'
     ];
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, Enrollment::class);
+    }
 }
