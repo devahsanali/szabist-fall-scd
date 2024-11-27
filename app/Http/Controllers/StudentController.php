@@ -123,4 +123,15 @@ class StudentController extends Controller
         }
         return redirect(route('student.index'));
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('query');
+
+        $students = Student::where('name', 'LIKE', '%' . $query . '%')
+        ->orWhere('email', 'LIKE', '%' . $query . '%')
+        ->get();
+
+        return view('student.search-results', compact('students'));
+    }
 }

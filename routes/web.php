@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
         Route::get('edit/{id}', [StudentController::class, 'edit'])->name('edit');
         Route::post('update', [StudentController::class, 'update'])->name('update');
         Route::get('destroy/{id}', [StudentController::class, 'destroy'])->name('destroy');
+        Route::get('/search', [StudentController::class, 'search'])->name('search');
     });
 
     Route::name('enrollment.')->prefix('enrollment')->group(function() {

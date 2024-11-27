@@ -7,6 +7,12 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="d-flex flex-row-reverse p-2" >
+                <input type="text" class="form-control" id="student-search" placeholder="Search by name or email">
+            </div>
+            <div id="student-results" class="row mt-0">
+                <!-- Results will be displayed here dynamically -->
+            </div>
             @if(Session::has('message'))
                 <div class="alert {{ Session::get('alert-class') }} alert-dismissible">
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -56,4 +62,31 @@
             </div>
         </div>
     </div>
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+                $('#student-search').on('keyup', function() {
+                    let query = $(this).val();
+                    if (query.length > 0) {
+                        // Perform the AJAX request
+                        $.ajax({
+                            url: '{{ route('student.search') }}',
+                            method: 'GET',
+                            data: { query: query },
+                            success: function(response) {
+                                // Update the results section with the response
+                                $('#student-results').html(response);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                    } else {
+                        $('#student-results').empty();
+                    }
+                });
+            });
+        </script>
+    @endpush
+
 </x-app-layout>
