@@ -36,13 +36,17 @@ class StudentController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|unique:students',
             'phone' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         try
         {
             if($validate)
             {
-                Student::create($request->all());
+                $filePath = $request->file('image')->store('uploads', 'public');
+                $fileName = basename($filePath);
+
+                Student::create(array_merge($request->all(), ['image' => $fileName]));
                 Session::flash('message', 'Student created successfully!');
                 Session::flash('alert-class', 'alert-success');
             } else{
@@ -78,16 +82,27 @@ class StudentController extends Controller
             'phone' => 'required',
         ]);
 
-        $data = Student::findOrFail($request->id);
-        if($data){
+        $student = Student::findOrFail($request->id);
+        if($student){
             try
             {
-                $data->update([
+                $data = [
                     'name' => $request->name,
                     'email' => $request->email,
                     'phone' => $request->phone,
-                    'address' => $request->address
-                ]);
+                    'address' => $request->address,
+                ];
+
+                if ($request->hasFile('image')) {
+                    if ($student->image && file_exists(storage_path('app/public/uploads/' . $student->image))) {
+                        unlink(storage_path('app/public/uploads/' . $student->image));
+                    }
+                    $filePath = $request->file('image')->store('uploads', 'public');
+                    $fileName = basename($filePath);
+                    $data['image'] = $fileName;
+                }
+
+                $student->update($data);
                 Session::flash('message', 'Student updated successfully!');
                 Session::flash('alert-class', 'alert-success');
             } catch(\Exception $e)

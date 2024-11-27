@@ -10,8 +10,23 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @php($route = isset($data) ? route('student.update') : route('student.store'))
-                    <form method="post" action="{{$route}}">
+                    <form method="post" action="{{$route}}" enctype="multipart/form-data">
                         @csrf
+                        @isset($data->image)
+                            <div class="mb-3">
+                                <img src="{{ asset('storage/uploads/' . $data->image) }}"
+                                     alt="Uploaded Photo"
+                                     class="img-thumbnail"
+                                     style="max-width: 150px; max-height: 150px;">
+                            </div>
+                        @endisset
+                        <div class="mb-3 mt-3">
+                            <div class="mt-3">
+                                <h5>Uploaded Photo:</h5>
+                                <input type="file" name="image" class="form-control"/>
+                                {{--<input type="file" name="images[]" class="form-control" multiple/>--}}
+                            </div>
+                        </div>
                         <div class="mb-3 mt-3">
                             <label for="name" class="form-label">Name:</label>
                             <input type="text" class="form-control @error('name') is-invalid @enderror"
