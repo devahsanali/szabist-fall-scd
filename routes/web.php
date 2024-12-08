@@ -4,6 +4,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,6 +46,15 @@ Route::middleware('auth')->group(function () {
         Route::get('edit/{id}', [CourseController::class, 'edit'])->name('edit');
         Route::post('update', [CourseController::class, 'update'])->name('update');
         Route::get('destroy/{id}', [CourseController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::name('teacher.')->prefix('teacher')->group(function() {
+        Route::get('/', [TeacherController::class, 'index'])->name('index');
+        Route::get('create', [TeacherController::class, 'create'])->name('create');
+        Route::post('store', [TeacherController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [TeacherController::class, 'edit'])->name('edit');
+        Route::post('update', [TeacherController::class, 'update'])->name('update');
+        Route::get('destroy/{id}', [TeacherController::class, 'destroy'])->name('destroy');
     });
 });
 
