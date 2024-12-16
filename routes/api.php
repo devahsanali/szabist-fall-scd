@@ -25,8 +25,8 @@ Route::middleware('auth:api')->group(function () {
         Route::get('create', [TeacherApiController::class, 'create'])->name('create');
         Route::post('store', [TeacherApiController::class, 'store'])->name('store');
         Route::get('edit/{id}', [TeacherApiController::class, 'edit'])->name('edit');
-        Route::post('update', [TeacherApiController::class, 'update'])->name('update');
-        Route::get('destroy/{id}', [TeacherApiController::class, 'destroy'])->name('destroy');
+        Route::put('update', [TeacherApiController::class, 'update'])->name('update');
+        Route::delete('destroy/{id}', [TeacherApiController::class, 'destroy'])->name('destroy');
     });
 });
 

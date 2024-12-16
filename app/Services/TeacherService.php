@@ -1,95 +1,124 @@
 <?php
+
 namespace App\Services;
 
+use App\Http\Requests\StoreTeacherRequest;
+use App\Http\Requests\UpdateTeacherRequest;
 use App\Models\Teacher;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Validation\Rule;
 
 class TeacherService
 {
     /**
      * Get all teachers.
+     *
+     * @return Collection
      */
-    public function getAllTeachers()
+    public function getAllTeachers(): Collection
     {
         return Teacher::all();
     }
 
     /**
      * Create a new teacher.
+     *
+     * @param StoreTeacherRequest $request
+     * @return array
      */
-    public function createTeacher(Request $request)
+    public function createTeacher(StoreTeacherRequest $request): array
     {
-        $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|unique:teachers',
-            'phone' => 'required',
-        ]);
-
         try {
-            Teacher::create($request->all());
-            return ['success' => true, 'message' => 'Teacher created successfully!'];
+            $teacher = Teacher::create($request->validated());
+
+            return [
+                'message' => 'Teacher created successfully.',
+                'success' => true,
+                'data' => $teacher
+            ];
         } catch (\Exception $e) {
-            Log::error('Teacher creation failed: ' . $e->getMessage());
-            return ['success' => false, 'message' => 'Something went wrong. Please try again later.'];
+            Log::error('Error creating teacher: ' . $e->getMessage());
+
+            return [
+                'message' => 'An error occurred while creating the teacher.',
+                'success' => false
+            ];
         }
     }
 
     /**
-     * Edit a new teacher.
+     * Get teacher by ID.
+     *
+     * @param int $id
+     * @return Teacher
+     * @throws ModelNotFoundException
      */
-    public function editTeacher($id)
+    public function getTeacherById(int $id): Teacher
     {
-        return  Teacher::findOrFail($id);
+        $teacher = Teacher::find($id);
+
+        if (!$teacher) {
+            throw new ModelNotFoundException("Teacher with ID {$id} not found.");
+        }
+
+        return $teacher;
     }
 
     /**
-     * Update a teacher's information.
+     * Update teacher information.
+     *
+     * @param UpdateTeacherRequest $request
+     * @return array
      */
-    public function updateTeacher(Request $request)
+    public function updateTeacher(UpdateTeacherRequest $request): array
     {
-        $request->validate([
-            'id' => 'required',
-            'name' => 'required|max:255',
-            Rule::unique('teachers')->ignore($request->id),
-            'phone' => 'required',
-        ]);
+        try {
+            $teacher = Teacher::findOrFail($request->id);
+            $teacher->update($request->validated());
 
-        $teacher = Teacher::findOrFail($request->id);
+            return [
+                'message' => 'Teacher updated successfully.',
+                'success' => true,
+                'data' => $teacher
+            ];
+        } catch (ModelNotFoundException $e) {
+            Log::error('Teacher not found: ' . $e->getMessage());
 
-        if ($teacher) {
-            try {
-                $teacher->update([
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'phone' => $request->phone,
-                    'address' => $request->address,
-                ]);
-                return ['success' => true, 'message' => 'Teacher updated successfully!'];
-            } catch (\Exception $e) {
-                Log::error('Update Failed. ' . $e->getMessage());
-                return ['success' => false, 'message' => 'Something went wrong. Please try again later.'];
-            }
+            return [
+                'message' => 'Teacher not found.',
+                'success' => false
+            ];
+        } catch (\Exception $e) {
+            Log::error('Error updating teacher: ' . $e->getMessage());
+
+            return [
+                'message' => 'An error occurred while updating the teacher.',
+                'success' => false
+            ];
         }
-
-        return ['success' => false, 'message' => 'Invalid Teacher ID'];
     }
 
     /**
      * Delete a teacher.
+     *
+     * @param int $id
+     * @return array
+     * @throws ModelNotFoundException
      */
-    public function deleteTeacher($id)
+    public function deleteTeacher(int $id): array
     {
-        $teacher = Teacher::findOrFail($id);
+        $teacher = Teacher::find($id);
 
-        try {
-            $teacher->delete();
-            return ['success' => true, 'message' => 'Teacher deleted successfully!'];
-        } catch (\Exception $e) {
-            Log::error('Delete operation failed. ' . $e->getMessage());
-            return ['success' => false, 'message' => 'Something went wrong. Please try again later.'];
+        if (!$teacher) {
+            throw new ModelNotFoundException("Teacher with ID {$id} not found.");
         }
+
+        $teacher->delete();
+
+        return [
+            'message' => 'Teacher deleted successfully.',
+            'success' => true
+        ];
     }
 }
